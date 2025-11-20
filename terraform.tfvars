@@ -1,0 +1,6 @@
+resource_group_name = "assetaip-dev"
+location            = "westeurope"
+customer_name       = "cosmotech"
+project_name        = "assetaip"
+project_stage       = "dev"
+api_dns_name        = "assetaip-dev"
