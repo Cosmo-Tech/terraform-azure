@@ -1,12 +1,12 @@
 # main_name                 = local.main_name
 # tags                      = local.tags
-# domain_name               = local.domain_name
-# domain_name_resourcegroup = local.domain_name_resourcegroup
+# domain_zone               = local.domain_zone
+# domain_zone_resourcegroup = local.domain_zone_resourcegroup
 
 # variable "main_name" {}
 # variable "tags" {}
-# variable "domain_name" {}
-# variable "domain_name_resourcegroup" {}
+# variable "domain_zone" {}
+# variable "domain_zone_resourcegroup" {}
 
 resource "azurerm_resource_group" "rg" {
   name     = local.main_name
@@ -40,7 +40,7 @@ module "cluster" {
 
   main_name   = local.main_name
   tags        = local.tags
-  domain_name = local.domain_name
+  domain_zone = local.domain_zone
 
   resource_group_name = azurerm_resource_group.rg.name
   cluster_region      = var.cluster_region
@@ -71,8 +71,8 @@ module "dns" {
   source = "./modules/dns"
 
   # Must point to the RG where the zone exists
-  domain_name               = local.domain_name
-  domain_name_resourcegroup = local.domain_name_resourcegroup
+  domain_zone               = local.domain_zone
+  domain_zone_resourcegroup = local.domain_zone_resourcegroup
 
   records = [
     {

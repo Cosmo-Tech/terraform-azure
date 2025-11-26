@@ -11,8 +11,8 @@ locals {
     },
   )
 
-  domain_name               = var.alternative_domain_name == null ? var.alternative_domain_name : "azure.platform.cosmotech.com"
-  domain_name_resourcegroup = var.alternative_domain_name_resourcegroup == null ? var.alternative_domain_name_resourcegroup : "phoenix"
+  domain_zone               = var.alternative_domain_zone == null ? var.alternative_domain_zone : "azure.platform.cosmotech.com"
+  domain_zone_resourcegroup = var.alternative_domain_zone_resourcegroup == null ? var.alternative_domain_zone_resourcegroup : "phoenix"
 }
 
 variable "cluster_name" {
@@ -35,17 +35,27 @@ variable "cluster_region" {
   type        = string
 }
 
+variable "azure_subscription_id" {
+  description = "Azure subscription ID"
+  type        = string
+}
+
+variable "azure_entra_tenant_id" {
+  description = "Azure Entra tenant ID"
+  type        = string
+}
+
 variable "additional_tags" {
   description = "List of tags"
   type        = map(string)
 }
 
-variable "alternative_domain_name" {
+variable "alternative_domain_zone" {
   description = "Altenative domain name for non Cosmo Tech deployments"
   type        = string
 }
 
-variable "alternative_domain_name_resourcegroup" {
+variable "alternative_domain_zone_resourcegroup" {
   description = "Resource group containing the altenative domain name for non Cosmo Tech deployments"
   type        = string
 }
@@ -167,19 +177,4 @@ variable "aks_dns_service_ip" {
   type        = string
   default     = "10.240.0.10"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

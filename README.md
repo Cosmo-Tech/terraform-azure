@@ -36,6 +36,9 @@
     * **terraform-cluster**
         * TODO
 
+* known errors
+    * Error: Get "http://localhost/api/v1/persistentvolumes/pv-harbor-redis": dial tcp 127.0.0.1:80: connect: connection refused
+        > If the cluster has been deleted, check the state file has also been deleted. If not, delete it.
 
 <br>
 <br>

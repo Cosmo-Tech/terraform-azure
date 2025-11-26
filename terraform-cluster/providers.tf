@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.14.0"
+  required_version = ">= 1.13.0"
 
   required_providers {
     azurerm = {
@@ -23,8 +23,10 @@ provider "azurerm" {
   features {}
   # subscription_id = data.azurerm_subscription.current.subscription_id
   # tenant_id       = data.azurerm_subscription.current.tenant_id
-  subscription_id = "a24b131f-bd0b-42e8-872a-bded9b91ab74"
-  tenant_id       = "e413b834-8be8-4822-a370-be619545cb49"
+  # subscription_id = "a24b131f-bd0b-42e8-872a-bded9b91ab74"
+  # tenant_id       = "e413b834-8be8-4822-a370-be619545cb49"
+  subscription_id = var.azure_subscription_id
+  tenant_id       = var.azure_entra_tenant_id
 }
 
 provider "kubernetes" {

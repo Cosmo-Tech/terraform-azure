@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Stop script if missing dependency
-required_commands="terraform aws jq"
+required_commands="terraform az jq"
 for command in $required_commands; do
     if [ -z "$(command -v $command)" ]; then
         echo "error: required command not found: \e[91m$command\e[97m"
@@ -26,7 +26,7 @@ cluster_region="$(get_var_value terraform-cluster/terraform.tfvars cluster_regio
 # Deploy
 terraform -chdir=terraform-cluster init -upgrade -reconfigure -backend-config="key=tfstate-cluster-aks-$cluster_stage-$cluster_name"
 terraform -chdir=terraform-cluster plan -out .terraform.plan
-terraform -chdir=terraform-cluster apply .terraform.plan
+# terraform -chdir=terraform-cluster apply .terraform.plan
 
 
 exit 0

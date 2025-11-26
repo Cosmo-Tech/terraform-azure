@@ -1,7 +1,6 @@
 variable "main_name" {}
 variable "tags" {}
-variable "domain_name" {}
-
+variable "domain_zone" {}
 variable "resource_group_name" { type = string }
 variable "cluster_region" { type = string }
 variable "cluster_stage" { type = string }

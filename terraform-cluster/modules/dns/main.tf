@@ -5,8 +5,8 @@ resource "azurerm_dns_a_record" "a_records" {
   }
 
   name                = each.value.name
-  zone_name           = var.domain_name
-  resource_group_name = var.domain_name_resourcegroup
+  zone_name           = var.domain_zone
+  resource_group_name = var.domain_zone_resourcegroup
   ttl                 = lookup(each.value, "ttl", 300)
   records             = each.value.rrdatas
 }
