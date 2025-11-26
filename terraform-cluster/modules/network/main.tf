@@ -1,37 +1,38 @@
 locals {
-  vnet_name   = "${var.customer_name}-${var.project_name}-${var.project_stage}-vnet"
+  vnet_name   = "${var.main_name}-vnet"
   subnet_name = "${local.vnet_name}-subnet"
   pods_subnet = "${local.vnet_name}-pods"
   svc_subnet  = "${local.vnet_name}-services"
-  lb_name     = "${var.project_name}-${var.project_stage}-lb-ip"
+
+  lb_name = "${var.main_name}-lb-ip"
 }
 
 # Virtual Network
 resource "azurerm_virtual_network" "vnet" {
   name                = local.vnet_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  resource_group_name = var.main_name
+  location            = var.cluster_region
   address_space       = [var.vnet_address_space]
 }
 
 # Subnets
 resource "azurerm_subnet" "default" {
   name                 = local.subnet_name
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = var.main_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnet_iprange]
 }
 
 resource "azurerm_subnet" "pods" {
   name                 = local.pods_subnet
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = var.main_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.pods_iprange]
 }
 
 resource "azurerm_subnet" "services" {
   name                 = local.svc_subnet
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = var.main_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.services_iprange]
 }
@@ -39,8 +40,8 @@ resource "azurerm_subnet" "services" {
 # NSG & rules (unchanged)
 resource "azurerm_network_security_group" "nsg" {
   name                = "${local.vnet_name}-nsg"
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  location            = var.cluster_region
+  resource_group_name = var.main_name
 }
 
 # Inbound: master → nodes (TCP ports)
@@ -55,7 +56,7 @@ resource "azurerm_network_security_rule" "allow_master_to_nodes" {
   source_port_range           = "*"
   destination_address_prefix  = "*"
   network_security_group_name = azurerm_network_security_group.nsg.name
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = var.main_name
 }
 
 # Inbound: internal node-to-node (TCP + ICMP)
@@ -70,7 +71,7 @@ resource "azurerm_network_security_rule" "allow_internal" {
   source_port_range           = "*"
   destination_address_prefix  = "*"
   network_security_group_name = azurerm_network_security_group.nsg.name
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = var.main_name
 }
 
 resource "azurerm_network_security_rule" "allow_icmp" {
@@ -84,7 +85,7 @@ resource "azurerm_network_security_rule" "allow_icmp" {
   source_port_range           = "*"
   destination_port_range      = "*"
   network_security_group_name = azurerm_network_security_group.nsg.name
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = var.main_name
 }
 
 # Inbound: public HTTP/HTTPS
@@ -99,7 +100,7 @@ resource "azurerm_network_security_rule" "allow_http_https" {
   source_port_range           = "*"
   destination_address_prefix  = "*"
   network_security_group_name = azurerm_network_security_group.nsg.name
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = var.main_name
 }
 
 # Outbound: allow all (egress)
@@ -114,7 +115,7 @@ resource "azurerm_network_security_rule" "allow_egress" {
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   network_security_group_name = azurerm_network_security_group.nsg.name
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = var.main_name
 }
 
 # Associate NSG to all subnets

@@ -1,9 +1,9 @@
-variable "resource_group_name" {
+variable "domain_name_resourcegroup" {
   description = "Azure resource group where the DNS zone exists."
   type        = string
 }
 
-variable "zone_name" {
+variable "domain_name" {
   description = "Existing DNS zone name in Azure (e.g., example.com)."
   type        = string
 }

@@ -1,3 +1,6 @@
+variable "main_name" {}
+variable "tags" {}
+
 variable "aks_cluster_id" {
   type = string
 }

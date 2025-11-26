@@ -3,7 +3,7 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "location" {
+variable "cluster_region" {
   description = "Azure region"
   type        = string
 }
