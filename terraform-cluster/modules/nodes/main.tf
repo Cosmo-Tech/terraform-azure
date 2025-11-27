@@ -27,10 +27,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "this" {
     max_surge = "1"
   }
 
-  tags = {
-    env     = each.value.tier
-    project = "aks-cluster"
-  }
+
+  tags = var.tags
+  # tags = {
+  #   tags    = var.tags
+  #   cluster = var.main_name
+  # }
 
   lifecycle {
     ignore_changes = [

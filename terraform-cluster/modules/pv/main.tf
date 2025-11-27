@@ -26,7 +26,7 @@ resource "azurerm_managed_disk" "this" {
 
   name                = each.value.final_disk_name
   resource_group_name = var.resource_group_name
-  location            = var.location
+  location            = var.cluster_region
 
   disk_size_gb         = each.value.disk_size_gb
   storage_account_type = "Standard_LRS"

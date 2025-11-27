@@ -1,28 +1,63 @@
-# Root variables.tf - Define all top-level variables
-variable "resource_group_name" {}
-variable "api_dns_name" {}
 
-variable "location" {
-  description = "The Azure Region (e.g., us-central1)"
-  type        = string
-  default     = "us-central1"
+locals {
+  main_name = "aks-${var.cluster_stage}-${var.cluster_name}"
+
+  tags = merge(
+    var.additional_tags,
+    {
+      rg     = local.main_name
+      stage  = var.cluster_stage
+      vendor = "cosmotech"
+    },
+  )
+
+  domain_zone               = var.alternative_domain_zone == null ? var.alternative_domain_zone : "azure.platform.cosmotech.com"
+  domain_zone_resourcegroup = var.alternative_domain_zone_resourcegroup == null ? var.alternative_domain_zone_resourcegroup : "phoenix"
 }
 
-variable "customer_name" {
-  description = "Customer name for naming conventions"
-  type        = string
-  default     = "cosmotech"
-}
-
-variable "project_name" {
-  description = "Project name for naming conventions"
+variable "cluster_name" {
+  description = "Kubernetes cluster name"
   type        = string
 }
 
-variable "project_stage" {
-  description = "Project stage (e.g., dev, prod)"
+variable "cluster_stage" {
+  description = "Kubernetes cluster stage"
   type        = string
-  default     = "prod"
+
+  validation {
+    condition     = contains(["test", "dev", "dmo", "ppd", "prd"], var.cluster_stage)
+    error_message = "Valid values for 'cluster_stage' are: \n- test\n- dev\n- dmo\n- ppd\n- prd"
+  }
+}
+
+variable "cluster_region" {
+  description = "Kubernetes cluster region"
+  type        = string
+}
+
+variable "azure_subscription_id" {
+  description = "Azure subscription ID"
+  type        = string
+}
+
+variable "azure_entra_tenant_id" {
+  description = "Azure Entra tenant ID"
+  type        = string
+}
+
+variable "additional_tags" {
+  description = "List of tags"
+  type        = map(string)
+}
+
+variable "alternative_domain_zone" {
+  description = "Altenative domain name for non Cosmo Tech deployments"
+  type        = string
+}
+
+variable "alternative_domain_zone_resourcegroup" {
+  description = "Resource group containing the altenative domain name for non Cosmo Tech deployments"
+  type        = string
 }
 
 variable "subnet_iprange" {
@@ -142,3 +177,4 @@ variable "aks_dns_service_ip" {
   type        = string
   default     = "10.240.0.10"
 }
+

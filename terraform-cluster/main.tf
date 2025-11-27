@@ -1,55 +1,50 @@
-# data azurerm_subscription current {}
-provider "azurerm" {
-  features {}
-  # subscription_id = data.azurerm_subscription.current.subscription_id
-  # tenant_id       = data.azurerm_subscription.current.tenant_id
-  subscription_id = "a24b131f-bd0b-42e8-872a-bded9b91ab74"
-  tenant_id       = "e413b834-8be8-4822-a370-be619545cb49"
-}
-terraform {
-  backend "azurerm" {
-    key                  = "tfstate-cluster-aks-assetaip-dev"
-    storage_account_name = "cosmotechstates"
-    container_name       = "cosmotechstates"
-    resource_group_name  = "cosmotechstates"
-  }
-}
+# main_name                 = local.main_name
+# tags                      = local.tags
+# domain_zone               = local.domain_zone
+# domain_zone_resourcegroup = local.domain_zone_resourcegroup
 
-# --------------------------------------------------
-# Resource Group
-# --------------------------------------------------
+# variable "main_name" {}
+# variable "tags" {}
+# variable "domain_zone" {}
+# variable "domain_zone_resourcegroup" {}
+
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.location
+  name     = local.main_name
+  location = var.cluster_region
 }
 
 
 module "network" {
   source = "./modules/network"
 
+  main_name = local.main_name
+  tags      = local.tags
+
   resource_group_name = azurerm_resource_group.rg.name
-  location            = var.location
-  customer_name       = var.customer_name
-  project_name        = var.project_name
-  project_stage       = var.project_stage
+  cluster_region      = var.cluster_region
+  cluster_stage       = var.cluster_stage
 
   vnet_address_space = var.vnet_address_space
   subnet_iprange     = var.subnet_iprange
   pods_iprange       = var.pods_iprange
   services_iprange   = var.services_iprange
-  depends_on         = [var.resource_group_name]
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
 
-# --------------------------------------------------
-# AKS Module
-# --------------------------------------------------
-module "aks" {
-  source = "./modules/aks"
+
+module "cluster" {
+  source = "./modules/cluster"
+
+  main_name   = local.main_name
+  tags        = local.tags
+  domain_zone = local.domain_zone
 
   resource_group_name = azurerm_resource_group.rg.name
-  location            = var.location
-  project_name        = var.project_name
-  project_stage       = var.project_stage
+  cluster_region      = var.cluster_region
+  cluster_stage       = var.cluster_stage
 
   # Node subnet from network module
   subnet_pods_id = module.network.subnet_pods_id
@@ -57,52 +52,62 @@ module "aks" {
   # NEW: Non-overlapping service CIDR for AKS
   aks_service_cidr = var.aks_service_cidr
   dns_service_ip   = var.aks_dns_service_ip
-  depends_on       = [module.network]
+
+  depends_on = [
+    module.network
+  ]
 }
+
 
 # module "rbac" {
 #   source = "./modules/rbac"
 #   resource_group_name = var.resource_group_name
-#   aks_name = module.aks.cluster_name
-#   depends_on = [ module.aks ]
+#   aks_name = module.cluster.cluster_name
+#   depends_on = [ module.cluster ]
 # }
 
-# --------------------------------------------------
-# DNS Module (existing zone)
-# --------------------------------------------------
-module "dns_record" {
-  source = "./modules/dns_record"
 
-  # 🔹 Must point to the RG where the zone exists
-  resource_group_name = "phoenix"
-  zone_name           = "azure.platform.cosmotech.com"
+module "dns" {
+  source = "./modules/dns"
+
+  # Must point to the RG where the zone exists
+  domain_zone               = local.domain_zone
+  domain_zone_resourcegroup = local.domain_zone_resourcegroup
 
   records = [
     {
-      name    = var.api_dns_name
+      name    = local.main_name
       type    = "A"
-      rrdatas = [module.aks.platform_lb_ip]
+      rrdatas = [module.cluster.platform_lb_ip]
     }
   ]
-  depends_on = [module.aks]
+
+  depends_on = [
+    module.cluster
+  ]
 }
 
 
-module "node_pools" {
-  source         = "./modules/node_pools"
-  aks_cluster_id = module.aks.cluster_id
-  # resource_group_name  = var.resource_group_name
-  # location             = var.location
-  node_pools = var.node_pools
+module "nodes" {
+  source = "./modules/nodes"
 
-  depends_on = [module.aks]
+  main_name = local.main_name
+  tags      = local.tags
+
+  aks_cluster_id = module.cluster.cluster_id
+  node_pools     = var.node_pools
+
+  depends_on = [
+    module.cluster
+  ]
 }
 
 
 module "persistent_volumes" {
-  source              = "./modules/pv"
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  source = "./modules/pv"
+
+  resource_group_name = local.main_name
+  cluster_region      = var.cluster_region
 
   pv_map = {
     keycloak = {
@@ -176,5 +181,7 @@ module "persistent_volumes" {
     }
   }
 
-  depends_on = [module.aks]
+  depends_on = [
+    module.cluster
+  ]
 }
