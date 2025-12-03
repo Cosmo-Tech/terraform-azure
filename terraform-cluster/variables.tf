@@ -112,7 +112,7 @@ variable "node_pools" {
       vm_size      = "Standard_DS2_v2"
       disk_size_gb = 50
       min_count    = 1
-      max_count    = 2
+      max_count    = 4
       tier         = "services"
       labels       = { "cosmotech.com/tier" = "services" }
       taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
