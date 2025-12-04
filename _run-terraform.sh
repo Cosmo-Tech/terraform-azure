@@ -26,7 +26,7 @@ cluster_region="$(get_var_value terraform-cluster/terraform.tfvars cluster_regio
 # Deploy
 terraform -chdir=terraform-cluster init -upgrade -reconfigure -backend-config="key=tfstate-cluster-aks-$cluster_stage-$cluster_name"
 terraform -chdir=terraform-cluster plan -out .terraform.plan
-# terraform -chdir=terraform-cluster apply .terraform.plan
+terraform -chdir=terraform-cluster apply .terraform.plan
 
 
 exit 0

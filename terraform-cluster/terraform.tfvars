@@ -1,4 +1,4 @@
-cluster_name          = "devops3"
+cluster_name          = "devopsggon"
 cluster_stage         = "dev"
 cluster_region        = "westeurope"
 azure_subscription_id = "a24b131f-bd0b-42e8-872a-bded9b91ab74"
