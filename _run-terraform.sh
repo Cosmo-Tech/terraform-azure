@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Script to run terraform modules
+# Usage :
+# - ./script.sh
+
+
 # Stop script if missing dependency
 required_commands="terraform az jq"
 for command in $required_commands; do
@@ -20,7 +25,6 @@ get_var_value() {
 }
 cluster_name="$(get_var_value terraform-cluster/terraform.tfvars cluster_name)"
 cluster_stage="$(get_var_value terraform-cluster/terraform.tfvars cluster_stage)"
-cluster_region="$(get_var_value terraform-cluster/terraform.tfvars cluster_region)"
 
 
 # Deploy
