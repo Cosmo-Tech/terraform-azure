@@ -138,7 +138,7 @@ variable "node_pools" {
     highcpu = {
       vm_size      = "Standard_F8s_v2"
       disk_size_gb = 100
-      min_count    = 1
+      min_count    = 0
       max_count    = 3
       tier         = "compute"
       labels       = { "cosmotech.com/size" = "highcpu" }
