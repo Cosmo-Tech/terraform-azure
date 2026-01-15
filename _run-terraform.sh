@@ -6,7 +6,7 @@
 
 
 # Stop script if missing dependency
-required_commands="terraform az jq"
+required_commands="terraform az"
 for command in $required_commands; do
     if [ -z "$(command -v $command)" ]; then
         echo "error: required command not found: \e[91m$command\e[97m"
@@ -25,6 +25,31 @@ get_var_value() {
 }
 cluster_name="$(get_var_value terraform-cluster/terraform.tfvars cluster_name)"
 cluster_stage="$(get_var_value terraform-cluster/terraform.tfvars cluster_stage)"
+cluster_region="$(get_var_value terraform-cluster/terraform.tfvars cluster_region)"
+
+state_storage_name="$(get_var_value terraform-state-storage/main.tf name)"
+azure_subscription_id="$(get_var_value terraform-cluster/terraform.tfvars azure_subscription_id)"
+azure_entra_tenant_id="$(get_var_value terraform-cluster/terraform.tfvars azure_entra_tenant_id)"
+
+
+# Ensure a storage service exist to store the states and ask to create it if doesn't exist
+if [ "$(az storage account list --query "contains([].name, '$state_storage_name')")" = 'false' ]; then
+    # Clear old data
+    rm -rf terraform-state-storage/.terraform*
+    rm -rf terraform-state-storage/terraform.tfstate*
+
+    echo ""
+    echo "error: storage to host states not found: \e[91m$state_storage_name\e[0m"
+    echo "you can either:"
+    echo "  - manually create a Storage Account with this name: $state_storage_name"
+    echo "  - run terraform-state-storage that will create it (copy/paste following commands to do so)"
+    echo "      terraform -chdir=terraform-state-storage init"
+    echo "      terraform -chdir=terraform-state-storage plan -out .terraform.plan -var 'region=$cluster_region' -var 'azure_subscription_id=$azure_subscription_id' -var 'azure_entra_tenant_id=$azure_entra_tenant_id'"
+    echo "      terraform -chdir=terraform-state-storage apply .terraform.plan"
+    exit
+else
+    echo "found $state_storage_name"
+fi
 
 
 # Deploy
