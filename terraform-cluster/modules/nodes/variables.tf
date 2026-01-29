@@ -1,4 +1,5 @@
 variable "main_name" {}
+
 variable "tags" {}
 
 variable "aks_cluster_id" {
@@ -8,9 +9,9 @@ variable "aks_cluster_id" {
 variable "node_pools" {
   type = map(object({
     vm_size      = string
-    disk_size_gb = number
     min_count    = number
     max_count    = number
+    disk_size_gb = number
     tier         = string
     labels       = map(string)
     taints = list(object({
