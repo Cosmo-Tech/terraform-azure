@@ -99,7 +99,7 @@ module "nodes" {
   node_pools = {
     monitoring = {
       vm_size      = var.node_monitoring_type
-      min_count    = var.node_monitoring_min
+      min_count    = 0
       max_count    = var.node_monitoring_max
       disk_size_gb = 50
       tier         = "monitoring"
@@ -108,7 +108,7 @@ module "nodes" {
     }
     services = {
       vm_size      = var.node_services_type
-      min_count    = var.node_services_min
+      min_count    = 0
       max_count    = var.node_services_max
       disk_size_gb = 50
       tier         = "services"
@@ -117,7 +117,7 @@ module "nodes" {
     }
     db = {
       vm_size      = var.node_db_type
-      min_count    = var.node_db_min
+      min_count    = 0
       max_count    = var.node_db_max
       disk_size_gb = 128
       tier         = "db"
@@ -126,7 +126,7 @@ module "nodes" {
     }
     basic = {
       vm_size      = var.node_basic_type
-      min_count    = var.node_basic_min
+      min_count    = 0
       max_count    = var.node_basic_max
       disk_size_gb = 100
       tier         = "compute"
@@ -135,7 +135,7 @@ module "nodes" {
     }
     highcpu = {
       vm_size      = var.node_highcpu_type
-      min_count    = var.node_highcpu_min
+      min_count    = 0
       max_count    = var.node_highcpu_max
       disk_size_gb = 100
       tier         = "compute"
@@ -144,7 +144,7 @@ module "nodes" {
     }
     highmemory = {
       vm_size      = var.node_highmemory_type
-      min_count    = var.node_highmemory_min
+      min_count    = 0
       max_count    = var.node_highmemory_max
       disk_size_gb = 100
       tier         = "compute"
@@ -153,7 +153,7 @@ module "nodes" {
     }
     system = {
       vm_size      = var.node_system_type
-      min_count    = var.node_system_min
+      min_count    = 0
       max_count    = var.node_system_max
       disk_size_gb = 50
       tier         = "system"

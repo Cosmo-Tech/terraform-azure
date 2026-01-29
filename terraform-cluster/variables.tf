@@ -84,31 +84,24 @@ variable "vnet_address_space" {
 }
 
 variable "node_db_type" { type = string }
-variable "node_db_min" { type = number }
 variable "node_db_max" { type = number }
 
 variable "node_monitoring_type" { type = string }
-variable "node_monitoring_min" { type = number }
 variable "node_monitoring_max" { type = number }
 
 variable "node_services_type" { type = string }
-variable "node_services_min" { type = number }
 variable "node_services_max" { type = number }
 
 variable "node_system_type" { type = string }
-variable "node_system_min" { type = number }
 variable "node_system_max" { type = number }
 
 variable "node_basic_type" { type = string }
-variable "node_basic_min" { type = number }
 variable "node_basic_max" { type = number }
 
 variable "node_highmemory_type" { type = string }
-variable "node_highmemory_min" { type = number }
 variable "node_highmemory_max" { type = number }
 
 variable "node_highcpu_type" { type = string }
-variable "node_highcpu_min" { type = number }
 variable "node_highcpu_max" { type = number }
 
 variable "aks_service_cidr" {
