@@ -95,7 +95,72 @@ module "nodes" {
   tags      = local.tags
 
   aks_cluster_id = module.cluster.cluster_id
-  node_pools     = var.node_pools
+
+  node_pools = {
+    monitoring = {
+      vm_size      = var.node_monitoring_type
+      min_count    = var.node_monitoring_min
+      max_count    = var.node_monitoring_max
+      disk_size_gb = 50
+      tier         = "monitoring"
+      labels       = { "cosmotech.com/tier" = "monitoring" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
+    }
+    services = {
+      vm_size      = var.node_services_type
+      min_count    = var.node_services_min
+      max_count    = var.node_services_max
+      disk_size_gb = 50
+      tier         = "services"
+      labels       = { "cosmotech.com/tier" = "services" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
+    }
+    db = {
+      vm_size      = var.node_db_type
+      min_count    = var.node_db_min
+      max_count    = var.node_db_max
+      disk_size_gb = 128
+      tier         = "db"
+      labels       = { "cosmotech.com/tier" = "db" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
+    }
+    basic = {
+      vm_size      = var.node_basic_type
+      min_count    = var.node_basic_min
+      max_count    = var.node_basic_max
+      disk_size_gb = 100
+      tier         = "compute"
+      labels       = { "cosmotech.com/size" = "basic" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
+    }
+    highcpu = {
+      vm_size      = var.node_highcpu_type
+      min_count    = var.node_highcpu_min
+      max_count    = var.node_highcpu_max
+      disk_size_gb = 100
+      tier         = "compute"
+      labels       = { "cosmotech.com/size" = "highcpu" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
+    }
+    highmemory = {
+      vm_size      = var.node_highmemory_type
+      min_count    = var.node_highmemory_min
+      max_count    = var.node_highmemory_max
+      disk_size_gb = 100
+      tier         = "compute"
+      labels       = { "cosmotech.com/size" = "highmemory" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
+    }
+    system = {
+      vm_size      = var.node_system_type
+      min_count    = var.node_system_min
+      max_count    = var.node_system_max
+      disk_size_gb = 50
+      tier         = "system"
+      labels       = { "cosmotech.com/tier" = "system" }
+      taints       = [] # system pods can schedule here
+    }
+  }
 
   depends_on = [
     module.cluster
