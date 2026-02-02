@@ -14,4 +14,3 @@ additional_tags = {
 # Otherwise, cosmotech.com will be used.
 alternative_domain_zone               = ""
 alternative_domain_zone_resourcegroup = ""
-
