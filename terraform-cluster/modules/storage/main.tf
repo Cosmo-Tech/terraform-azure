@@ -11,7 +11,7 @@ data "kubernetes_nodes" "db" {
 resource "azurerm_managed_disk" "disk" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
-  name     = "disk-${var.tenant}-${var.resource}"
+  name     = "disk-${var.resource}"
   location = var.region
   resource_group_name  = [for node in data.kubernetes_nodes.db.nodes : node.metadata.0.labels].0["kubernetes.azure.com/cluster"]
   storage_account_type = "Premium_LRS"
@@ -19,7 +19,7 @@ resource "azurerm_managed_disk" "disk" {
   disk_size_gb         = var.size
 
   depends_on = [
-    var.tenant,
+    var.namespace,
   ]
 }
 
@@ -28,7 +28,7 @@ resource "kubernetes_persistent_volume" "pv" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
-    name = "pv-${var.tenant}-${var.resource}"
+    name = "pv-${var.resource}"
   }
   spec {
     capacity = {
@@ -41,7 +41,7 @@ resource "kubernetes_persistent_volume" "pv" {
         caching_mode  = "None"
         data_disk_uri = azurerm_managed_disk.disk[0].id
         # data_disk_uri = "/subscriptions/${var.azure_subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Compute/disks/${azurerm_managed_disk.disk.name}"
-        disk_name = "pv-${var.tenant}-${var.resource}"
+        disk_name = "pv-${var.resource}"
         kind      = "Managed"
       }
     }
@@ -57,8 +57,8 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
-    namespace = var.tenant
-    name      = "pvc-${var.tenant}-${var.resource}"
+    namespace = var.namespace
+    name      = "pvc-${var.resource}"
   }
   spec {
     access_modes       = kubernetes_persistent_volume.pv[0].spec[0].access_modes
