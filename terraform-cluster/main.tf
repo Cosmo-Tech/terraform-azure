@@ -95,89 +95,70 @@ module "nodes" {
   tags      = local.tags
 
   aks_cluster_id = module.cluster.cluster_id
-  node_pools     = var.node_pools
 
-  depends_on = [
-    module.cluster
-  ]
-}
-
-
-module "persistent_volumes" {
-  source = "./modules/pv"
-
-  resource_group_name = local.main_name
-  cluster_region      = var.cluster_region
-
-  pv_map = {
-    keycloak = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "keycloak" }
-      access_modes       = ["ReadWriteOnce"]
+  node_pools = {
+    monitoring = {
+      vm_size      = var.node_monitoring_type
+      min_count    = 0
+      max_count    = var.node_monitoring_max
+      disk_size_gb = 50
+      tier         = "monitoring"
+      labels       = { "cosmotech.com/tier" = "monitoring" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
     }
-
-    prometheus = {
-      disk_size_gb       = 100
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "prometheus" }
-      access_modes       = ["ReadWriteOnce"]
+    services = {
+      vm_size      = var.node_services_type
+      min_count    = 0
+      max_count    = var.node_services_max
+      disk_size_gb = 50
+      tier         = "services"
+      labels       = { "cosmotech.com/tier" = "services" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
     }
-
-    grafana = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "grafana" }
-      access_modes       = ["ReadWriteOnce"]
+    db = {
+      vm_size      = var.node_db_type
+      min_count    = 0
+      max_count    = var.node_db_max
+      disk_size_gb = 128
+      tier         = "db"
+      labels       = { "cosmotech.com/tier" = "db" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
     }
-
-    loki = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "loki" }
-      access_modes       = ["ReadWriteOnce"]
+    basic = {
+      vm_size      = var.node_basic_type
+      min_count    = 0
+      max_count    = var.node_basic_max
+      disk_size_gb = 100
+      tier         = "compute"
+      labels       = { "cosmotech.com/size" = "basic" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
     }
-
-    harbor-registry = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "harbor" }
-      access_modes       = ["ReadWriteOnce"]
+    highcpu = {
+      vm_size      = var.node_highcpu_type
+      min_count    = 0
+      max_count    = var.node_highcpu_max
+      disk_size_gb = 100
+      tier         = "compute"
+      labels       = { "cosmotech.com/size" = "highcpu" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
     }
-
-    harbor-jobservice = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "harbor" }
-      access_modes       = ["ReadWriteOnce"]
+    highmemory = {
+      vm_size      = var.node_highmemory_type
+      min_count    = 0
+      max_count    = var.node_highmemory_max
+      disk_size_gb = 100
+      tier         = "compute"
+      labels       = { "cosmotech.com/size" = "highmemory" }
+      taints       = [{ key = "vendor", value = "cosmotech", effect = "NoSchedule" }]
     }
-
-    harbor-chartmuseum = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "harbor" }
-      access_modes       = ["ReadWriteOnce"]
-    }
-
-    harbor-trivy = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "harbor" }
-      access_modes       = ["ReadWriteOnce"]
-    }
-
-    harbor-postgresql = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "harbor" }
-      access_modes       = ["ReadWriteOnce"]
-    }
-
-    harbor-redis = {
-      disk_size_gb       = 50
-      storage_class_name = "cosmotech-retain"
-      labels             = { app = "harbor" }
-      access_modes       = ["ReadWriteOnce"]
+    system = {
+      vm_size      = var.node_system_type
+      min_count    = 0
+      max_count    = var.node_system_max
+      disk_size_gb = 50
+      tier         = "system"
+      labels       = { "cosmotech.com/tier" = "system" }
+      taints       = [] # system pods can schedule here
     }
   }
 

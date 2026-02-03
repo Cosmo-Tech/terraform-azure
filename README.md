@@ -21,8 +21,9 @@
     ```
 * deploy
     * fill `terraform-cluster/terraform.tfvars` variables according to your needs
+        > :pencil2: you can change default Kubernetes nodes configuration from `terraform-cluster/terraform.auto.tfvars`
     * run pre-configured script
-        > :information_source: comment/uncomment the `terraform apply` line at the end to get a plan without deploy anything
+        > :pencil2: comment/uncomment the `terraform apply` line at the end to get a plan without deploy anything
         * Linux
             ```
             ./_run-terraform.sh
