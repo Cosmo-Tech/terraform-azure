@@ -1,13 +1,9 @@
-# Resource group that hosts disks
-# It must be the same resource group that contains nodes, otherwise disks won't be attached to nodes and pods will never start
-data "kubernetes_nodes" "all_nodes" {}
-
 resource "azurerm_managed_disk" "disk" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
-  name     = "disk-${var.resource}"
-  location = var.region
-  resource_group_name  = [for node in data.kubernetes_nodes.all_nodes.nodes : node.metadata.0.labels].0["kubernetes.azure.com/cluster"]
+  name                 = "disk-${var.resource}"
+  location             = var.region
+  resource_group_name  = var.resource_group
   storage_account_type = "Premium_LRS"
   create_option        = "Empty"
   disk_size_gb         = var.size
