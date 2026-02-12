@@ -79,6 +79,11 @@ module "dns" {
       name    = local.main_name
       type    = "A"
       rrdatas = [module.cluster.platform_lb_ip]
+    },
+    {
+      name    = "superset-${local.main_name}"
+      type    = "A"
+      rrdatas = [module.cluster.platform_lb_ip]
     }
   ]
 
