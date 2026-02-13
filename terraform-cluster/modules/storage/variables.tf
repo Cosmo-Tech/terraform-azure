@@ -24,3 +24,7 @@ variable "region" {
 variable "cloud_provider" {
   type = string
 }
+
+variable "resource_group" {
+  type = string
+}
