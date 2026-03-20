@@ -12,3 +12,8 @@ variable "azure_entra_tenant_id" {
   description = "Azure Entra tenant ID"
   type        = string
 }
+
+variable "state_storage_name" {
+  description = "Name for the Terraform state storage account and resource group. If empty, a unique name will be generated from the subscription ID."
+  type        = string
+}
