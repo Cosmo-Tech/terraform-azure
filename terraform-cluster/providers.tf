@@ -13,9 +13,7 @@ terraform {
   }
 
   backend "azurerm" {
-    storage_account_name = "cosmotechstates"
-    container_name       = "cosmotechstates"
-    resource_group_name  = "cosmotechstates"
+    # These values are provided dynamically via -backend-config in _run-terraform.sh and _run-terraform.ps1 run scripts
   }
 }
 
