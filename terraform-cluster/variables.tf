@@ -11,8 +11,8 @@ locals {
     },
   )
 
-  domain_zone               = var.alternative_domain_zone == null ? var.alternative_domain_zone : "azure.platform.cosmotech.com"
-  domain_zone_resourcegroup = var.alternative_domain_zone_resourcegroup == null ? var.alternative_domain_zone_resourcegroup : "phoenix"
+  domain_zone               = var.alternative_domain_zone != "" ? var.alternative_domain_zone : "azure.platform.cosmotech.com"
+  domain_zone_resourcegroup = var.alternative_domain_zone_resourcegroup != "" ? var.alternative_domain_zone_resourcegroup : "phoenix"
 }
 
 variable "cluster_name" {
