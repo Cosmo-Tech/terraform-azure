@@ -73,7 +73,7 @@ terraform -chdir=terraform-cluster init -upgrade -reconfigure \
     -backend-config="resource_group_name=$state_storage_name" \
     -backend-config="key=tfstate-cluster-aks-$cluster_stage-$cluster_name"
 terraform -chdir=terraform-cluster plan -out .terraform.plan
-# terraform -chdir=terraform-cluster apply .terraform.plan
+terraform -chdir=terraform-cluster apply .terraform.plan
 
 
 exit 0
