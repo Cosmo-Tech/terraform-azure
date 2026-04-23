@@ -73,5 +73,14 @@ terraform -chdir=terraform-cluster init -upgrade -reconfigure `
 terraform -chdir=terraform-cluster plan -out .terraform.plan
 # terraform -chdir=terraform-cluster apply .terraform.plan
 
+$option_apply = '--apply'
+if ($args[0] -eq $option_apply) {
+    terraform -chdir=terraform-cluster apply .terraform.plan
+} else {
+    echo ''
+    echo "Terraform plan can be applied with:"
+    echo "  $0 $option_apply"
+}
+
 
 exit 0
