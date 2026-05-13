@@ -23,15 +23,26 @@
     * fill `terraform-cluster/terraform.tfvars` variables according to your needs
         > :pencil2: you can change default Kubernetes nodes configuration from `terraform-cluster/terraform.auto.tfvars`
     * run pre-configured script
-        > :pencil2: comment/uncomment the `terraform apply` line at the end to get a plan without deploy anything
-        * Linux
-            ```
-            ./_run-terraform.sh
-            ```
-        * Windows
-            ```
-            ./_run-terraform.ps1
-            ```
+        * plan
+            > get an execution plan to preview the changes without applying
+            * Linux
+                ```
+                ./_run-terraform.sh
+                ```
+            * Windows
+                ```
+                ./_run-terraform.ps1
+                ```
+        * apply
+            > executes the operations proposed in the plan
+            * Linux
+                ```
+                ./_run-terraform.sh --apply
+                ```
+            * Windows
+                ```
+                ./_run-terraform.ps1 --apply
+                ```
 
 ## Known errors
 * Error: Get "http://localhost/api/v1/persistentvolumes/pv-name": dial tcp 127.0.0.1:80: connect: connection refused
