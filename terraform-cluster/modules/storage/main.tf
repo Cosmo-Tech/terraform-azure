@@ -8,6 +8,18 @@ resource "azurerm_managed_disk" "disk" {
   create_option        = "Empty"
   disk_size_gb         = var.size
 
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [
+      name,
+      location,
+      resource_group_name,
+      storage_account_type,
+      create_option,
+      disk_size_gb,
+    ]
+  }
+
   depends_on = [
     var.namespace,
   ]
@@ -20,6 +32,7 @@ resource "kubernetes_persistent_volume" "pv" {
   metadata {
     name = "pv-${var.resource}"
   }
+
   spec {
     capacity = {
       storage = "${azurerm_managed_disk.disk[0].disk_size_gb}Gi"
@@ -37,6 +50,14 @@ resource "kubernetes_persistent_volume" "pv" {
     }
   }
 
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      metadata[0],
+      spec[0],
+    ]
+  }
+
   depends_on = [
     azurerm_managed_disk.disk,
   ]
@@ -50,6 +71,7 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
     namespace = var.namespace
     name      = "pvc-${var.resource}"
   }
+
   spec {
     access_modes       = kubernetes_persistent_volume.pv[0].spec[0].access_modes
     storage_class_name = kubernetes_persistent_volume.pv[0].spec[0].storage_class_name
@@ -59,6 +81,14 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
       }
     }
     volume_name = kubernetes_persistent_volume.pv[0].metadata[0].name
+  }
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      metadata[0],
+      spec[0],
+    ]
   }
 
   depends_on = [
