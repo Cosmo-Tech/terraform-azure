@@ -42,7 +42,7 @@
     * **terraform-state-storage**
         * standalone module intended to facilitate creation of a Storage Account (that will be used to store states of others modules)
         * state of this module itselft will not be saved, once created it should never be changed
-        * manually create a Storage Account called `cosmotechstates` will have the same effect
+        * manually create a Storage Account called `csmstates<id>` will have the same effect
     * **terraform-cluster**
         * *cluster* = Kubernetes cluster
         * *dns* = pre-configure DNS zones that will be required in next deployments
