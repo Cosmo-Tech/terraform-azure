@@ -15,7 +15,7 @@ resource "azurerm_managed_disk" "disk" {
 
   lifecycle {
     prevent_destroy = true
-    ignore_changes  = [
+    ignore_changes = [
       name,
       location,
       resource_group_name,
