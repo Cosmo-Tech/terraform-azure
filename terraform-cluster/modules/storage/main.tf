@@ -1,3 +1,8 @@
+data "azurerm_resource_group" "resource_group" {
+  name = var.resource_group
+}
+
+
 resource "azurerm_managed_disk" "disk" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
@@ -19,6 +24,8 @@ resource "azurerm_managed_disk" "disk" {
       disk_size_gb,
     ]
   }
+
+  tags = data.azurerm_resource_group.resource_group.tags
 
   depends_on = [
     var.namespace,
