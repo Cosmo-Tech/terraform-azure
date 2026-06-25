@@ -28,3 +28,9 @@ variable "cloud_provider" {
 variable "resource_group" {
   type = string
 }
+
+variable "pvc_annotations" {
+  type        = map(string)
+  description = "Optional annotations to set on PVC"
+  default     = {}
+}
