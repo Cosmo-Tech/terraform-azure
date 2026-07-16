@@ -4,7 +4,7 @@ node_db_max  = 10
 node_services_type = "Standard_D8lds_v6"
 node_services_max  = 10
 
-node_monitoring_type = "Standard_D2lds_v6"
+node_monitoring_type = "Standard_D8lds_v6"
 node_monitoring_max  = 10
 
 node_system_type = "Standard_D2lds_v6"
