@@ -28,3 +28,21 @@ variable "cloud_provider" {
 variable "resource_group" {
   type = string
 }
+variable "labels" {
+  description = "Additional labels to apply to the PVC"
+  type        = map(string)
+  default     = {}
+}
+
+variable "annotations" {
+  description = "Additional annotations to apply to the PVC"
+  type        = map(string)
+  default     = {}
+}
+variable "pv_name" {
+  type        = string
+}
+
+variable "pvc_name" {
+  type        = string
+}

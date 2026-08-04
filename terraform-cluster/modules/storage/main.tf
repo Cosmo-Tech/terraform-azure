@@ -2,7 +2,6 @@ data "azurerm_resource_group" "resource_group" {
   name = var.resource_group
 }
 
-
 resource "azurerm_managed_disk" "disk" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
@@ -37,7 +36,7 @@ resource "kubernetes_persistent_volume" "pv" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
-    name = "pv-${var.resource}"
+    name = var.pv_name
   }
 
   spec {
@@ -51,7 +50,7 @@ resource "kubernetes_persistent_volume" "pv" {
         caching_mode  = "None"
         data_disk_uri = azurerm_managed_disk.disk[0].id
         # data_disk_uri = "/subscriptions/${var.azure_subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Compute/disks/${azurerm_managed_disk.disk.name}"
-        disk_name = "pv-${var.resource}"
+        disk_name = azurerm_managed_disk.disk[0].name
         kind      = "Managed"
       }
     }
@@ -70,13 +69,19 @@ resource "kubernetes_persistent_volume" "pv" {
   ]
 }
 
-
 resource "kubernetes_persistent_volume_claim" "pvc" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
     namespace = var.namespace
-    name      = "pvc-${var.resource}"
+    name      = var.pvc_name
+    labels = merge(
+      {
+        "managed-by" = "terraform"
+      },
+      var.labels
+    )
+    annotations = var.annotations
   }
 
   spec {
@@ -91,7 +96,7 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   }
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = true  
     ignore_changes = [
       metadata[0],
       spec[0],
