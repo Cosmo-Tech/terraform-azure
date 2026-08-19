@@ -1,3 +1,9 @@
+locals {
+  disk_name = "disk-${var.resource}"
+  pv_name   = "pv-${var.resource}"
+  pvc_name  = var.pvc_name_overwrite != "" ? var.pvc_name_overwrite : "pvc-${var.resource}"
+}
+
 data "azurerm_resource_group" "resource_group" {
   name = var.resource_group
 }
@@ -5,7 +11,7 @@ data "azurerm_resource_group" "resource_group" {
 resource "azurerm_managed_disk" "disk" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
-  name                 = "disk-${var.resource}"
+  name                 = local.disk_name
   location             = var.region
   resource_group_name  = var.resource_group
   storage_account_type = "Premium_LRS"
@@ -31,12 +37,11 @@ resource "azurerm_managed_disk" "disk" {
   ]
 }
 
-
 resource "kubernetes_persistent_volume" "pv" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
-    name = var.pv_name
+    name = local.pv_name
   }
 
   spec {
@@ -73,14 +78,9 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
-    namespace = var.namespace
-    name      = var.pvc_name
-    labels = merge(
-      {
-        "managed-by" = "terraform"
-      },
-      var.labels
-    )
+    namespace   = var.namespace
+    name        = local.pvc_name
+    labels      = var.labels
     annotations = var.annotations
   }
 
@@ -95,16 +95,15 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
     volume_name = kubernetes_persistent_volume.pv[0].metadata[0].name
   }
 
-  lifecycle {
-    prevent_destroy = true  
-    ignore_changes = [
-      metadata[0],
-      spec[0],
-    ]
-  }
+  # lifecycle {
+  #   prevent_destroy = true  
+  #   ignore_changes = [
+  #     metadata[0],
+  #     spec[0],
+  #   ]
+  # }
 
   depends_on = [
     kubernetes_persistent_volume.pv[0],
   ]
 }
-

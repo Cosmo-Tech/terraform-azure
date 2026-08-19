@@ -39,10 +39,7 @@ variable "annotations" {
   type        = map(string)
   default     = {}
 }
-variable "pv_name" {
-  type        = string
-}
 
-variable "pvc_name" {
-  type        = string
+variable "pvc_name_overwrite" {
+  type = string
 }
