@@ -1,7 +1,7 @@
 locals {
-  disk_name = "disk-${var.resource}"
-  pv_name   = "pv-${var.resource}"
-  pvc_name  = var.pvc_name_overwrite != "" ? var.pvc_name_overwrite : "pvc-${var.resource}"
+  disk_name = "disk-${var.main_name}"
+  pv_name   = "pv-${var.main_name}"
+  pvc_name  = var.pvc_name
 }
 
 data "azurerm_resource_group" "resource_group" {
