@@ -23,6 +23,7 @@ function get_var_value {
 $cluster_name = (get_var_value 'terraform-cluster/terraform.tfvars' 'cluster_name')
 $cluster_stage = (get_var_value 'terraform-cluster/terraform.tfvars' 'cluster_stage')
 $cluster_region = (get_var_value 'terraform-cluster/terraform.tfvars' 'cluster_region')
+$cluster_full_name = "aks-$cluster_stage-$cluster_name"
 
 $azure_subscription_id = (get_var_value 'terraform-cluster/terraform.tfvars' 'azure_subscription_id')
 $azure_entra_tenant_id = (get_var_value 'terraform-cluster/terraform.tfvars' 'azure_entra_tenant_id')
@@ -69,13 +70,19 @@ terraform -chdir=terraform-cluster init -upgrade -reconfigure `
     -backend-config="storage_account_name=$state_storage_name" `
     -backend-config="container_name=$state_storage_name" `
     -backend-config="resource_group_name=$state_storage_name" `
-    -backend-config="key=tfstate-cluster-aks-$cluster_stage-$cluster_name"
+    -backend-config="key=tfstate-cluster-$cluster_full_name"
 terraform -chdir=terraform-cluster plan -out .terraform.plan
-# terraform -chdir=terraform-cluster apply .terraform.plan
+
+echo ''
+echo "target is $FG_COLOR_INFO$cluster_full_name"
+echo ''
 
 $option_apply = '--apply'
 if ($args[0] -eq $option_apply) {
     terraform -chdir=terraform-cluster apply .terraform.plan
+
+    echo "add the cluster to your kubeconfig:"
+    echo "az aks get-credentials --resource-group $cluster_full_name --name $cluster_full_name --overwrite-existing"
 } else {
     echo ''
     echo "Terraform plan can be applied with:"
