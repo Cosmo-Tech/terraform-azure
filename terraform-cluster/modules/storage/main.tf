@@ -77,13 +77,11 @@ resource "kubernetes_persistent_volume" "pv" {
 }
 
 resource "kubernetes_persistent_volume_claim" "pvc" {
-  count = var.cloud_provider == "azure" ? 1 : 0
+  count = var.cloud_provider == "azure" && var.create_pvc ? 1 : 0
 
   metadata {
-    namespace   = var.namespace
-    name        = local.pvc_name
-    labels      = var.labels
-    annotations = var.annotations
+    namespace = var.namespace
+    name      = local.pvc_name
   }
 
   spec {

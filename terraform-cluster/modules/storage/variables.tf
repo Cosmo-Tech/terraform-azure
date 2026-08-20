@@ -29,19 +29,12 @@ variable "resource_group" {
   type = string
 }
 
-variable "labels" {
-  description = "Additional labels to apply to the PVC"
-  type        = map(string)
-  default     = {}
-}
-
-variable "annotations" {
-  description = "Additional annotations to apply to the PVC"
-  type        = map(string)
-  default     = {}
-}
-
 variable "pvc_name" {
   type        = string
   description = "It can happens the PVC name require a strict format, depending on the tool using it. In such cases, main_name cannot be used."
+}
+
+variable "create_pvc" {
+  description = "Allow/disallow PVC creation. Useful in case of using a tool that requires to create the PVC itself."
+  type        = bool
 }
