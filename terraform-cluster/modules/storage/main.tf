@@ -1,12 +1,17 @@
+locals {
+  disk_name = "disk-${var.main_name}"
+  pv_name   = "pv-${var.main_name}"
+  pvc_name  = var.pvc_name
+}
+
 data "azurerm_resource_group" "resource_group" {
   name = var.resource_group
 }
 
-
 resource "azurerm_managed_disk" "disk" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
-  name                 = "disk-${var.resource}"
+  name                 = local.disk_name
   location             = var.region
   resource_group_name  = var.resource_group
   storage_account_type = "Premium_LRS"
@@ -32,12 +37,11 @@ resource "azurerm_managed_disk" "disk" {
   ]
 }
 
-
 resource "kubernetes_persistent_volume" "pv" {
   count = var.cloud_provider == "azure" ? 1 : 0
 
   metadata {
-    name = "pv-${var.resource}"
+    name = local.pv_name
   }
 
   spec {
@@ -51,17 +55,19 @@ resource "kubernetes_persistent_volume" "pv" {
         caching_mode  = "None"
         data_disk_uri = azurerm_managed_disk.disk[0].id
         # data_disk_uri = "/subscriptions/${var.azure_subscription_id}/resourceGroups/${azurerm_resource_group.rg.name}/providers/Microsoft.Compute/disks/${azurerm_managed_disk.disk.name}"
-        disk_name = "pv-${var.resource}"
+        disk_name = azurerm_managed_disk.disk[0].name
         kind      = "Managed"
       }
+    }
+    claim_ref {
+      namespace = var.namespace
+      name      = local.pvc_name
     }
   }
 
   lifecycle {
-    prevent_destroy = true
-    ignore_changes = [
-      metadata[0],
-      spec[0],
+    replace_triggered_by = [
+      terraform_data.pv_pvc_binding_check.output
     ]
   }
 
@@ -70,13 +76,12 @@ resource "kubernetes_persistent_volume" "pv" {
   ]
 }
 
-
 resource "kubernetes_persistent_volume_claim" "pvc" {
-  count = var.cloud_provider == "azure" ? 1 : 0
+  count = var.cloud_provider == "azure" && var.create_pvc ? 1 : 0
 
   metadata {
     namespace = var.namespace
-    name      = "pvc-${var.resource}"
+    name      = local.pvc_name
   }
 
   spec {
@@ -91,10 +96,8 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   }
 
   lifecycle {
-    prevent_destroy = true
-    ignore_changes = [
-      metadata[0],
-      spec[0],
+    replace_triggered_by = [
+      terraform_data.pv_pvc_binding_check.output
     ]
   }
 
@@ -103,3 +106,6 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   ]
 }
 
+resource "terraform_data" "pv_pvc_binding_check" {
+  input = md5("${var.namespace}-${local.pv_name}-${local.pvc_name}")
+}
