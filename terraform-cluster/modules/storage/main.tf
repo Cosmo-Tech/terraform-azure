@@ -59,13 +59,15 @@ resource "kubernetes_persistent_volume" "pv" {
         kind      = "Managed"
       }
     }
+    claim_ref {
+      namespace = var.namespace
+      name      = local.pvc_name
+    }
   }
 
   lifecycle {
-    prevent_destroy = true
-    ignore_changes = [
-      metadata[0],
-      spec[0],
+    replace_triggered_by = [
+      terraform_data.pv_pvc_binding_check.output
     ]
   }
 
@@ -96,17 +98,16 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   }
 
   lifecycle {
-    # prevent_destroy = true  
-    # ignore_changes = [
-    #   metadata[0],
-    #   spec[0],
-    # ]
     replace_triggered_by = [
-      kubernetes_persistent_volume.pv[0]
+      terraform_data.pv_pvc_binding_check.output
     ]
   }
 
   depends_on = [
     kubernetes_persistent_volume.pv[0],
   ]
+}
+
+resource "terraform_data" "pv_pvc_binding_check" {
+  input = md5("${var.namespace}-${local.pv_name}-${local.pvc_name}")
 }
