@@ -76,6 +76,9 @@ terraform -chdir=terraform-cluster plan -out .terraform.plan
 $option_apply = '--apply'
 if ($args[0] -eq $option_apply) {
     terraform -chdir=terraform-cluster apply .terraform.plan
+
+    echo "add the cluster to your kubeconfig:"
+    echo "az aks get-credentials --resource-group aks-$cluster_stage-$cluster_name --name aks-$cluster_stage-$cluster_name --overwrite-existing"
 } else {
     echo ''
     echo "Terraform plan can be applied with:"
