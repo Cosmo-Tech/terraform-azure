@@ -82,8 +82,6 @@ resource "kubernetes_persistent_volume_claim" "pvc" {
   metadata {
     namespace   = var.namespace
     name        = local.pvc_name
-    labels      = var.labels
-    annotations = var.annotations
   }
 
   spec {
