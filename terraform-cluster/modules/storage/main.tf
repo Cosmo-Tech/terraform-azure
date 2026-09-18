@@ -66,6 +66,11 @@ resource "kubernetes_persistent_volume" "pv" {
   }
 
   lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      metadata[0],
+      spec[0],
+    ]
     replace_triggered_by = [
       terraform_data.pv_pvc_binding_check.output
     ]
